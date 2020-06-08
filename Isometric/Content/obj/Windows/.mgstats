@@ -1,8 +1,0 @@
-Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
-"C:/Users/johnn/source/repos/Isometric/Isometric/Content/altSelector.png","C:/Users/johnn/source/repos/Isometric/Isometric/Content/bin/Windows/altSelector.xnb","TextureProcessor","Texture2DContent",2660,39253,1.952153
-"C:/Users/johnn/source/repos/Isometric/Isometric/Content/Arial.spritefont","C:/Users/johnn/source/repos/Isometric/Isometric/Content/bin/Windows/Arial.xnb","FontDescriptionProcessor","SpriteFontContent",2008,21521,3.440506
-"C:/Users/johnn/source/repos/Isometric/Isometric/Content/iso_land.png","C:/Users/johnn/source/repos/Isometric/Isometric/Content/bin/Windows/iso_land.xnb","TextureProcessor","Texture2DContent",14477,32853,2.189552
-"C:/Users/johnn/source/repos/Isometric/Isometric/Content/plains.png","C:/Users/johnn/source/repos/Isometric/Isometric/Content/bin/Windows/plains.xnb","TextureProcessor","Texture2DContent",12927,32853,1.02973
-"C:/Users/johnn/source/repos/Isometric/Isometric/Content/selector.png","C:/Users/johnn/source/repos/Isometric/Isometric/Content/bin/Windows/selector.xnb","TextureProcessor","Texture2DContent",2452,39253,1.439953
-"C:/Users/johnn/source/repos/Isometric/Isometric/Content/snow.png","C:/Users/johnn/source/repos/Isometric/Isometric/Content/bin/Windows/snow.xnb","TextureProcessor","Texture2DContent",14343,32853,1.316682
-"C:/Users/johnn/source/repos/Isometric/Isometric/Content/UDT_Aggressor.png","C:/Users/johnn/source/repos/Isometric/Isometric/Content/bin/Windows/UDT_Aggressor.xnb","TextureProcessor","Texture2DContent",20249,32853,0.1770284

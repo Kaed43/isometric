@@ -1,0 +1,83 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+
+<#
+var lines = File.ReadAllLines(Host.ResolvePath("./Content/Content.mgcb"));
+var regexMatcher = new Regex(@"#begin ([^.]+)\.png");
+var regexMatcher2 = new Regex(@"#begin ([^.]+)\.spritefont");
+
+List<string> ImageNames = new List<string>();
+List<string> FontNames = new List<string>();
+
+foreach(var line in lines)
+{
+	if(regexMatcher.IsMatch(line))
+	{
+		ImageNames.Add(regexMatcher.Match(line).Groups[1].Value);
+	}
+	if(regexMatcher2.IsMatch(line))
+	{
+		FontNames.Add(regexMatcher2.Match(line).Groups[1].Value);
+	}
+}
+
+#>
+
+namespace Isometric
+{
+
+	/// <summary>
+	/// Automatically loads images and fonts from the Content project
+	/// TEXT-TEMPLATE GENERATED, DO NOT EDIT MANUALLY
+	/// To re-generate, right click the .tt file and select "Run Custom tool"
+	///   Or click Build->"Transform All T4 Templates"
+	/// </summary>
+	static class ContentLoader
+	{
+<#
+foreach(var name in ImageNames)
+{
+#>
+		public static Texture2D <#=name#> { get; private set; }
+<#
+}
+#>
+<#
+foreach(var name in FontNames)
+{
+#>
+		public static SpriteFont <#=name#> { get; private set; }
+<#
+}
+#>
+		
+		public static void Initialize(ContentManager cm)
+		{
+
+<#
+foreach(var name in ImageNames)
+{
+#>
+			<#=name#> = cm.Load<Texture2D>(@"<#=name#>");
+<#
+}
+#>
+<#
+foreach(var name in FontNames)
+{
+#>
+			<#=name#> = cm.Load<SpriteFont>(@"<#=name#>");
+<#
+}
+#>
+		}
+	}
+}

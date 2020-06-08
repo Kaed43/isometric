@@ -7,6 +7,7 @@ namespace Isometric
 {
     public class Game1 : Game
     {
+        readonly NKeyboard NKeys;
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         int worldWidth;
@@ -28,11 +29,11 @@ namespace Isometric
         SpriteFont font;
         bool spacer;
         int turn;
-        public KeyboardState oldState = Keyboard.GetState();
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            NKeys = new NKeyboard();
         }
 
         protected override void Initialize()
@@ -79,33 +80,33 @@ namespace Isometric
 
         protected override void Update(GameTime gameTime)
         {
+            NKeys.Update();
             spacer = false;
-            KeyboardState newState = Keyboard.GetState();
-            if (newState.IsKeyDown(Keys.Escape))
+            if (NKeys.IsKeyDown(Keys.Escape))
             {
                 Exit();
             }
             MouseState state = Mouse.GetState();
-            if (newState.IsKeyDown(Keys.W))
+            if (NKeys.IsKeyDown(Keys.W))
             {
                 cameraOffset.Y+=5;
             }
-            if (newState.IsKeyDown(Keys.S))
+            if (NKeys.IsKeyDown(Keys.S))
             {
                 cameraOffset.Y -= 5;
             }
-            if (newState.IsKeyDown(Keys.A))
+            if (NKeys.IsKeyDown(Keys.A))
             {
                 cameraOffset.X += 5;
             }
-            if (newState.IsKeyDown(Keys.D))
+            if (NKeys.IsKeyDown(Keys.D))
             {
                 cameraOffset.X -= 5;
             }
 
             if ( selectedUnitIndex == -1)
             {
-                if (newState.IsKeyDown(Keys.Space) && oldState.IsKeyUp(Keys.Space))
+                if (NKeys.IsKeyPressed(Keys.Space))
                 {
                     turn++;
                     foreach (Unit unit in units)
@@ -113,7 +114,7 @@ namespace Isometric
                         unit.setMoves(unit.getUnitType().getMaxMoves());
                     }
                 }
-                if (newState.IsKeyDown(Keys.Enter) && oldState.IsKeyUp(Keys.Enter))
+                if (NKeys.IsKeyPressed(Keys.Enter))
                 {
                     bool clear = true;
                     int x = 0;
@@ -148,19 +149,19 @@ namespace Isometric
 
                 }
 
-                if (newState.IsKeyDown(Keys.Down) && oldState.IsKeyUp(Keys.Down))
+                if (NKeys.IsKeyPressed(Keys.Down))
                 {
                     selectedTile.Y++;
                 }
-                if (newState.IsKeyDown(Keys.Up) && oldState.IsKeyUp(Keys.Up))
+                if (NKeys.IsKeyPressed(Keys.Up))
                 {
                     selectedTile.Y--;
                 }
-                if (newState.IsKeyDown(Keys.Right) && oldState.IsKeyUp(Keys.Right))
+                if (NKeys.IsKeyPressed(Keys.Right))
                 {
                     selectedTile.X++;
                 }
-                if (newState.IsKeyDown(Keys.Left) && oldState.IsKeyUp(Keys.Left))
+                if (NKeys.IsKeyPressed(Keys.Left))
                 {
                     selectedTile.X--;
                 }
@@ -174,7 +175,7 @@ namespace Isometric
             if ( selectedUnitIndex != -1)
             {
                 string movType = units[selectedUnitIndex].getUnitType().getMovType();
-                if (newState.IsKeyDown(Keys.Down) && oldState.IsKeyUp(Keys.Down))
+                if (NKeys.IsKeyPressed(Keys.Down))
                 {
                     if (world[(int)lockedTile.X, (int)lockedTile.Y+1].getType().getMoveCostFromTypeString(movType)<= units[selectedUnitIndex].getMoves())
                     {
@@ -183,7 +184,7 @@ namespace Isometric
                         lockedTile.Y++;
                     }
                 }
-                if (newState.IsKeyDown(Keys.Up) && oldState.IsKeyUp(Keys.Up))
+                if (NKeys.IsKeyPressed(Keys.Up))
                 {
                     if (world[(int)lockedTile.X, (int)lockedTile.Y - 1].getType().getMoveCostFromTypeString(movType) <= units[selectedUnitIndex].getMoves())
                     {
@@ -192,7 +193,7 @@ namespace Isometric
                         lockedTile.Y--;
                     }
                 }
-                if (newState.IsKeyDown(Keys.Right) && oldState.IsKeyUp(Keys.Right))
+                if (NKeys.IsKeyPressed(Keys.Right))
                 {
                     if (world[(int)lockedTile.X+1, (int)lockedTile.Y].getType().getMoveCostFromTypeString(movType) <= units[selectedUnitIndex].getMoves())
                     {
@@ -201,7 +202,7 @@ namespace Isometric
                         lockedTile.X++;
                     }
                 }
-                if (newState.IsKeyDown(Keys.Left) && oldState.IsKeyUp(Keys.Left))
+                if (NKeys.IsKeyPressed(Keys.Left))
                 {
                     if (world[(int)lockedTile.X - 1, (int)lockedTile.Y].getType().getMoveCostFromTypeString(movType) <= units[selectedUnitIndex].getMoves())
                     {
@@ -210,14 +211,13 @@ namespace Isometric
                         lockedTile.X--;
                     }
                 }
-                if (newState.IsKeyDown(Keys.Enter) && oldState.IsKeyUp(Keys.Enter) && spacer==false)
+                if (NKeys.IsKeyPressed(Keys.Enter) && spacer==false)
                 {
                     selectedUnitIndex = -1;
                     lockedTile.X = -1;
                     lockedTile.Y = -1;
                 }
             }
-            oldState = newState;
             base.Update(gameTime);
         }
 

@@ -47,6 +47,5 @@ namespace Isometric
         /// </summary>
         public bool IsKeyReleased(Keys k)
             => State.IsKeyUp(k) && oldState.IsKeyDown(k);
-
     }
 }

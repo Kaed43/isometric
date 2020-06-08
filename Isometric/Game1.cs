@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Isometric
 {
@@ -18,16 +19,26 @@ namespace Isometric
         UnitType aggressorUT;
         List<Unit> units;
         Vector2 cameraOffset;
-        Vector2 selectedTile;
-        Vector2 lockedTile = new Vector2(-1,-1);
+        Point selectedTile;
+        Point lockedTile = new Point(-1,-1);
         int selectedUnitIndex = -1;
-        bool spacer;
         int turn;
+
+        readonly Dictionary<Keys, Point> MovementDirections;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             NKeys = new NKeyboard();
+
+            MovementDirections = new Dictionary<Keys, Point>()
+            {
+                { Keys.Down, new Point(0, 1) },
+                { Keys.Up, new Point(0, -1) },
+                { Keys.Left, new Point(-1, 0) },
+                { Keys.Right, new Point(1, 0) },
+            };
         }
 
         protected override void Initialize()
@@ -39,6 +50,8 @@ namespace Isometric
             world = new Tile[worldWidth, worldHeight];
             units = new List<Unit>();
             turn = 1;
+
+            IsMouseVisible = true;
             base.Initialize();
         }
 
@@ -47,7 +60,7 @@ namespace Isometric
             spriteBatch = new SpriteBatch(GraphicsDevice);
             ContentLoader.Initialize(Content);
 
-            aggressorUT = new UnitType("Aggressor", "UE", "The “Aggressor” light tank sacrifices firepower for superior armor, granting it the ‘medium’ armor classification- though it is still without most traits of a main battle tank. While this unit’s rapid fire main cannon is effective against soft targets, it lacks armor penetration and is at a disadvantage against equally armored foes.", "Light Tank", 1, 2200, 0, 0, 338, 200, "Medium", new Weapon[1] { new Weapon(30, "Pierce", 8, 2, 0) }, 8, "tread", 8, ContentLoader.UDT_Aggressor);
+            aggressorUT = new UnitType("Aggressor", "UE", "The “Aggressor” light tank sacrifices firepower for superior armor, granting it the ‘medium’ armor classification- though it is still without most traits of a main battle tank. While this unit’s rapid fire main cannon is effective against soft targets, it lacks armor penetration and is at a disadvantage against equally armored foes.", "Light Tank", 1, 2200, 0, 0, 338, 200, "Medium", new Weapon[] { new Weapon(30, "Pierce", 8, 2, 0) }, 8, "tread", 8, ContentLoader.UDT_Aggressor);
             plainsTT = new TileType("plains", "Plains", "An area of primarily open and flat plains.", ContentLoader.plains, 500, "plains_damage_1", 1, 1, 1, 0, 2, 1, 2, 2, 2, 2, 1, 1, 0, 0, 0, 0);
             snowTT = new TileType("snow", "Snow", "An area of permafrost covered permanently by deep snow.", ContentLoader.snow, 2700, "tundra_battlefield", 1, 0.75f, 0.73f, 0, 5, 6, 6, 4, 6, 2, 1, 1, 0, 0, 0, 0);
 
@@ -60,7 +73,7 @@ namespace Isometric
                 }
             }
 
-            units.Add(new Unit(aggressorUT, new Vector2(0,0), 1));
+            //units.Add(new Unit(aggressorUT, new Point(0,0), 1));
         }
 
         protected override void UnloadContent()
@@ -70,7 +83,6 @@ namespace Isometric
         protected override void Update(GameTime gameTime)
         {
             NKeys.Update();
-            spacer = false;
             if (NKeys.IsKeyDown(Keys.Escape))
             {
                 Exit();
@@ -100,35 +112,20 @@ namespace Isometric
                     turn++;
                     foreach (Unit unit in units)
                     {
-                        unit.setMoves(unit.getUnitType().getMaxMoves());
+                        unit.Moves = unit.Type.getMaxMoves();
                     }
                 }
                 if (NKeys.IsKeyPressed(Keys.Enter))
                 {
                     bool clear = true;
-                    // Ok so x is 0...
-                    int x = 0;
-                    foreach (Unit unit in units)
+                    for(var x = 0; x < units.Count; x++)
                     {
-                        // and now it's not zero
-                        x++;
-                        if (unit.getPosition() == selectedTile)
+                        if(units[x].Position == selectedTile)
                         {
-                            System.Console.WriteLine("X: " + x);
+                            selectedUnitIndex = x;
+                            lockedTile = selectedTile;
                             clear = false;
-                            // and if the selected unit... ... which is -1.... is the previous unit...? WHAT IS THIS?
-                            if (selectedUnitIndex == x - 1)
-                            {
-                                selectedUnitIndex = -1;
-                                lockedTile.Y = -1;
-                                lockedTile.X = -1;
-                            }
-                            else
-                            {
-                                selectedUnitIndex = x - 1;
-                                lockedTile = selectedTile;
-                                spacer = true;
-                            }
+                            break;
                         }
                     }
                     if (clear == true)
@@ -138,24 +135,12 @@ namespace Isometric
                         lockedTile.X = -1;
                         lockedTile.Y = -1;
                     }
-
                 }
 
-                if (NKeys.IsKeyPressed(Keys.Down))
+                foreach(var kvp in MovementDirections)
                 {
-                    selectedTile.Y++;
-                }
-                if (NKeys.IsKeyPressed(Keys.Up))
-                {
-                    selectedTile.Y--;
-                }
-                if (NKeys.IsKeyPressed(Keys.Right))
-                {
-                    selectedTile.X++;
-                }
-                if (NKeys.IsKeyPressed(Keys.Left))
-                {
-                    selectedTile.X--;
+                    if (NKeys.IsKeyPressed(kvp.Key))
+                        selectedTile += kvp.Value;
                 }
 
                 if (state.LeftButton == ButtonState.Pressed)
@@ -163,47 +148,29 @@ namespace Isometric
                     selectedTile = pixelToWorld(new Vector2(state.X, state.Y), cameraOffset);
                 }
             }
-
-            if ( selectedUnitIndex != -1)
+            else
             {
-                string movType = units[selectedUnitIndex].getUnitType().getMovType();
-                if (NKeys.IsKeyPressed(Keys.Down))
+                string movType = units[selectedUnitIndex].Type.getMovType();
+
+                foreach(var kvp in MovementDirections)
                 {
-                    if (world[(int)lockedTile.X, (int)lockedTile.Y+1].getType().getMoveCostFromTypeString(movType)<= units[selectedUnitIndex].getMoves())
+                    if (NKeys.IsKeyPressed(kvp.Key))
                     {
-                        units[selectedUnitIndex].setMoves(units[selectedUnitIndex].getMoves() - world[(int)lockedTile.X, (int)lockedTile.Y + 1].getType().getMoveCostFromTypeString(movType));
-                        units[selectedUnitIndex].setPosition(new Vector2(units[selectedUnitIndex].getPosition().X, units[selectedUnitIndex].getPosition().Y+1));
-                        lockedTile.Y++;
+                        var selectedUnit = units[selectedUnitIndex];
+                        var tgtCoords = lockedTile + kvp.Value;
+                        if (tgtCoords.X < 0 || tgtCoords.Y < 0 || tgtCoords.X >= worldWidth || tgtCoords.Y >= worldHeight)
+                            continue;
+                        var targetTile = world[lockedTile.X + kvp.Value.X, lockedTile.Y + kvp.Value.Y];
+                        if(targetTile.getType().getMoveCostFromTypeString(movType) <= selectedUnit.Moves)
+                        {
+                            selectedUnit.Moves = selectedUnit.Moves - targetTile.getType().getMoveCostFromTypeString(movType);
+                            selectedUnit.Position = selectedUnit.Position + kvp.Value;
+                            selectedTile += kvp.Value;
+                        }
                     }
                 }
-                if (NKeys.IsKeyPressed(Keys.Up))
-                {
-                    if (world[(int)lockedTile.X, (int)lockedTile.Y - 1].getType().getMoveCostFromTypeString(movType) <= units[selectedUnitIndex].getMoves())
-                    {
-                        units[selectedUnitIndex].setMoves(units[selectedUnitIndex].getMoves() - world[(int)lockedTile.X, (int)lockedTile.Y - 1].getType().getMoveCostFromTypeString(movType));
-                        units[selectedUnitIndex].setPosition(new Vector2(units[selectedUnitIndex].getPosition().X, units[selectedUnitIndex].getPosition().Y - 1));
-                        lockedTile.Y--;
-                    }
-                }
-                if (NKeys.IsKeyPressed(Keys.Right))
-                {
-                    if (world[(int)lockedTile.X+1, (int)lockedTile.Y].getType().getMoveCostFromTypeString(movType) <= units[selectedUnitIndex].getMoves())
-                    {
-                        units[selectedUnitIndex].setMoves(units[selectedUnitIndex].getMoves() - world[(int)lockedTile.X+1, (int)lockedTile.Y].getType().getMoveCostFromTypeString(movType));
-                        units[selectedUnitIndex].setPosition(new Vector2(units[selectedUnitIndex].getPosition().X+1, units[selectedUnitIndex].getPosition().Y));
-                        lockedTile.X++;
-                    }
-                }
-                if (NKeys.IsKeyPressed(Keys.Left))
-                {
-                    if (world[(int)lockedTile.X - 1, (int)lockedTile.Y].getType().getMoveCostFromTypeString(movType) <= units[selectedUnitIndex].getMoves())
-                    {
-                        units[selectedUnitIndex].setMoves(units[selectedUnitIndex].getMoves() - world[(int)lockedTile.X - 1, (int)lockedTile.Y].getType().getMoveCostFromTypeString(movType));
-                        units[selectedUnitIndex].setPosition(new Vector2(units[selectedUnitIndex].getPosition().X - 1, units[selectedUnitIndex].getPosition().Y));
-                        lockedTile.X--;
-                    }
-                }
-                if (NKeys.IsKeyPressed(Keys.Enter) && spacer==false)
+                
+                if (NKeys.IsKeyPressed(Keys.Enter))
                 {
                     selectedUnitIndex = -1;
                     lockedTile.X = -1;
@@ -217,30 +184,25 @@ namespace Isometric
         {
             GraphicsDevice.Clear(Color.Black);
             spriteBatch.Begin(transformMatrix: Matrix.CreateTranslation(cameraOffset.X,cameraOffset.Y,0));
-            // WHY IS THIS GUY NOT LINED UP, WHATS WRONG WITH HIM, EH?
-                for (int i = 0; i < worldHeight; i++)
+            for (int i = 0; i < worldHeight; i++)
+            {
+                for (int p = 0; p < worldWidth; p++)
                 {
-                    for (int p = 0; p < worldWidth; p++)
-                    {
-                        spriteBatch.Draw(world[p,i].getType().getSprite(), world[p,i].getScreenPosition());
-                    }
+                    spriteBatch.Draw(world[p,i].getType().getSprite(), world[p,i].getScreenPosition(), Color.White);
                 }
-                spriteBatch.Draw(ContentLoader.selector, new Vector2((selectedTile.X * 64 - selectedTile.Y * 64)-4, (selectedTile.X * 32 + selectedTile.Y * 32)-4));
-                if ( lockedTile.X!=-1 && lockedTile.Y != -1)
-                {
-                    spriteBatch.Draw(ContentLoader.altSelector, new Vector2((lockedTile.X * 64 - lockedTile.Y * 64) - 4, (lockedTile.X * 32 + lockedTile.Y * 32) - 4));
-                }
+            }
+            spriteBatch.Draw(ContentLoader.selector, worldToScreenBounds(selectedTile), Color.White);
+            if ( lockedTile.X!=-1 && lockedTile.Y != -1)
+            {
+                spriteBatch.Draw(ContentLoader.altSelector, worldToScreenBounds(lockedTile), Color.White);
+            }
             foreach (Unit unit in units)
             {
-                spriteBatch.Draw(unit.getUnitType().getSprite(), new Vector2(unit.getPosition().X*64 - unit.getPosition().Y*64, unit.getPosition().X*32 + unit.getPosition().Y*32));
-                if (unit.getMoves() == 0)
-                {
-                    spriteBatch.DrawString(ContentLoader.Arial, "z", new Vector2((unit.getPosition().X * 64 - unit.getPosition().Y * 64)+32, unit.getPosition().X * 32 + unit.getPosition().Y * 32),Color.Black);
-                }
+                spriteBatch.Draw(unit.Type.getSprite(), worldToScreenBounds(unit.Position), unit.Moves == 0 ? Color.Gray : Color.White);
             }
             if (selectedUnitIndex != -1)
             {
-                spriteBatch.DrawString(ContentLoader.Arial, "Remaining Moves: "+units[selectedUnitIndex].getMoves().ToString(), new Vector2(10, 30)-cameraOffset, Color.Red);
+                spriteBatch.DrawString(ContentLoader.Arial, "Remaining Moves: "+units[selectedUnitIndex].Moves.ToString(), new Vector2(10, 30)-cameraOffset, Color.Red);
             }
             spriteBatch.DrawString(ContentLoader.Arial, "Turn " + turn, new Vector2(10, 10) - cameraOffset, Color.Red);
             spriteBatch.End();
@@ -248,13 +210,18 @@ namespace Isometric
             base.Draw(gameTime);
         }
 
-        public Vector2 pixelToWorld(Vector2 pixel, Vector2 cameraOffset)
+        public Point pixelToWorld(Vector2 pixel, Vector2 cameraOffset)
         {
             int mouseX = (int)pixel.X - (int)cameraOffset.X;
             int mouseY = (int)pixel.Y - (int)cameraOffset.Y;
-            int posX = (int)System.Math.Floor((mouseX / 64 + mouseY / 32) * 0.5);
-            int posY = (int)System.Math.Floor((-mouseX / 64 + mouseY / 32) * 0.5f);
-            return new Vector2(posX, posY);
+            int posX = (mouseX / Constants.HalfTileWidth + mouseY / Constants.HalfTileHeight) / 2;
+            int posY = (-mouseX / Constants.HalfTileWidth + mouseY / Constants.HalfTileHeight) / 2;
+            return new Point(posX, posY);
+        }
+
+        public Rectangle worldToScreenBounds(Point p)
+        {
+            return new Rectangle((p.X - p.Y) * Constants.HalfTileWidth, (p.X + p.Y) * Constants.HalfTileHeight, Constants.TileWidth, Constants.TileHeight);
         }
     }
 }

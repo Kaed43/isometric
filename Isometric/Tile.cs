@@ -20,12 +20,12 @@ namespace Isometric
             this.type = tiletype;
             hp = tiletype.getMaxHP();
         }
-        public Vector2 getScreenPosition()
+        public Rectangle getScreenPosition()
         {
             // I like all these constants just floating around
-            int x = Xposition * 64 - Yposition *64;
-            int y = Xposition * 32 + Yposition * 32;
-            return new Vector2(x,y);
+            int x = Xposition * Constants.HalfTileWidth - Yposition * Constants.HalfTileWidth;
+            int y = Xposition * Constants.HalfTileHeight + Yposition * Constants.HalfTileHeight;
+            return new Rectangle(x, y, Constants.TileWidth, Constants.TileHeight);
         }
         public TileType getType()
         {

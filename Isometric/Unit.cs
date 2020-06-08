@@ -9,41 +9,21 @@ namespace Isometric
 {
     class Unit
     {
-        UnitType type;
-        Vector2 position;
-        int player;
-        int moves;
-        int HP;
-        bool inCombat;
+        public UnitType Type { get; }
+        public Point Position { get; set; }
+        public int Player { get; }
+        public int Moves { get; set; }
+        public int HP { get; }
+        public bool InCombat { get; }
 
-        public Unit(UnitType type, Vector2 position, int player)
+        public Unit(UnitType type, Point position, int player)
         {
-            this.type = type;
-            this.position = position;
-            this.player = player;
-            moves = type.getMaxMoves();
+            Type = type;
+            Position = position;
+            Player = player;
+            Moves = type.getMaxMoves();
             HP = type.getMaxHP();
-            inCombat = false;
-        }
-        public UnitType getUnitType()
-        {
-            return type;
-        }
-        public Vector2 getPosition()
-        {
-            return position;
-        }
-        public void setPosition(Vector2 x)
-        {
-            this.position = x;
-        }
-        public int getMoves()
-        {
-            return moves;
-        }
-        public void setMoves(int num)
-        {
-            this.moves = num;
+            InCombat = false;
         }
     }
 }

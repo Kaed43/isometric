@@ -32,6 +32,7 @@ namespace Isometric
         int lvCost;
         int landerCost;
         int subCost;
+
         public TileType(string name, string displayName, string desc, Texture2D sprite, int maxHP, string deathTile, int losCost, float defMultiplier, float atkMultiplier, int losBonus, int footCost, int tireCost, int treadCost, int crawlerCost, int amphCost, int hoverCost, int structureCost, int airCost, int svCost, int lvCost, int landerCost, int subCost)
         {
             this.name = name;
@@ -69,6 +70,7 @@ namespace Isometric
         }
         public int getMoveCostFromTypeString(string type)
         {
+            // QQQ WHAT THE FUCK
             if (type == "foot")
             {
                 return footCost;

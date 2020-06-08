@@ -12,23 +12,19 @@ namespace Isometric
         int hp;
         int Xposition;
         int Yposition;
-        TileType type;
+        public TileType type { get; }
 
         public Tile(int x,int y,TileType tiletype) {
             Xposition = x;
             Yposition = y;
             this.type = tiletype;
-            hp = tiletype.getMaxHP();
+            hp = tiletype.maxHP;
         }
         public Rectangle getScreenPosition()
         {
             int x = Xposition * Constants.HalfTileWidth - Yposition * Constants.HalfTileWidth;
             int y = Xposition * Constants.HalfTileHeight + Yposition * Constants.HalfTileHeight;
             return new Rectangle(x, y, Constants.TileWidth, Constants.TileHeight);
-        }
-        public TileType getType()
-        {
-            return type;
         }
     }
 }

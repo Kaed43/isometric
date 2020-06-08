@@ -60,8 +60,9 @@ namespace Isometric
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
             ContentLoader.Initialize(Content);
-
-            aggressorUT = new UnitType("Aggressor", "UE", "The “Aggressor” light tank sacrifices firepower for superior armor, granting it the ‘medium’ armor classification- though it is still without most traits of a main battle tank. While this unit’s rapid fire main cannon is effective against soft targets, it lacks armor penetration and is at a disadvantage against equally armored foes.", "Light Tank", 1, 2200, 0, 0, 338, 200, "Medium", new Weapon[] { new Weapon(30, "Pierce", 8, 2, 0) }, 8, EMoveType.Tread, 8, ContentLoader.UDT_Aggressor);
+            //HACK: Make my image loading use your magic
+            Texture2D tempAggressorTint = Content.Load<Texture2D>("UDT_Aggressor_tint");
+            aggressorUT = new UnitType("Aggressor", "UE", "The “Aggressor” light tank sacrifices firepower for superior armor, granting it the ‘medium’ armor classification- though it is still without most traits of a main battle tank. While this unit’s rapid fire main cannon is effective against soft targets, it lacks armor penetration and is at a disadvantage against equally armored foes.", "Light Tank", 1, 2200, 0, 0, 338, 200, "Medium", new Weapon[] { new Weapon(30, "Pierce", 8, 2, 0) }, 8, EMoveType.Tread, 8, ContentLoader.UDT_Aggressor, tempAggressorTint);
 
             allTileTypes = new Dictionary<string, TileType>();
 
@@ -84,7 +85,6 @@ namespace Isometric
                 }
             }
 
-            //units.Add(new Unit(aggressorUT, new Point(0,0), 1));
         }
 
         protected override void UnloadContent()
@@ -134,7 +134,7 @@ namespace Isometric
                     turn++;
                     foreach (Unit unit in units)
                     {
-                        unit.Moves = unit.Type.getMaxMoves();
+                        unit.Moves = unit.Type.maxMoves;
                     }
                 }
                 if (NKeys.IsKeyPressed(Keys.Enter))
@@ -175,7 +175,7 @@ namespace Isometric
             }
             else
             {
-                var movType = units[selectedUnitIndex].Type.getMovType();
+                var movType = units[selectedUnitIndex].Type.moveType;
 
                 foreach(var kvp in MovementDirections)
                 {
@@ -194,10 +194,10 @@ namespace Isometric
                         }
                         if (tgtCoords.X < 0 || tgtCoords.Y < 0 || tgtCoords.X >= worldWidth || tgtCoords.Y >= worldHeight)
                             continue;
-                        var targetTile = world[lockedTile.X + kvp.Value.X, lockedTile.Y + kvp.Value.Y];
-                        if(targetTile.getType().getMoveCostFromTypeString(movType) <= selectedUnit.Moves && clear == true)
+                        var targetTile = world[selectedTile.X + kvp.Value.X, selectedTile.Y + kvp.Value.Y];
+                        if(targetTile.type.getMoveCostFromTypeString(movType) <= selectedUnit.Moves && clear == true)
                         {
-                            selectedUnit.Moves = selectedUnit.Moves - targetTile.getType().getMoveCostFromTypeString(movType);
+                            selectedUnit.Moves = selectedUnit.Moves - targetTile.type.getMoveCostFromTypeString(movType);
                             selectedUnit.Position = selectedUnit.Position + kvp.Value;
                             selectedTile += kvp.Value;
                         }
@@ -222,29 +222,31 @@ namespace Isometric
             {
                 for (int p = 0; p < worldWidth; p++)
                 {
-                    spriteBatch.Draw(world[p,i].getType().getSprite(), world[p,i].getScreenPosition(), Color.White);
+                    spriteBatch.Draw(world[p,i].type.sprite, world[p,i].getScreenPosition(), Color.White);
                 }
             }
             spriteBatch.Draw(ContentLoader.selector, worldToScreenBounds(selectedTile), Color.White);
             if ( lockedTile.X!=-1 && lockedTile.Y != -1)
             {
-                spriteBatch.Draw(ContentLoader.altSelector, worldToScreenBounds(lockedTile), Color.White);
+                spriteBatch.Draw(ContentLoader.selector, worldToScreenBounds(lockedTile), Color.Red);
             }
             foreach (Unit unit in units)
             {
+                //HACK: Make tinting not look like shit?
                 if (unit.Player == 2)
                 {
-                    spriteBatch.Draw(unit.Type.getSprite(), worldToScreenBounds(unit.Position), unit.Moves == 0 ? Color.DarkRed : Color.Red);
+                    spriteBatch.Draw(unit.Type.sprite, worldToScreenBounds(unit.Position), unit.Moves == 0 ? Color.Gray : Color.White);
+                    spriteBatch.Draw(unit.Type.tintSprite, worldToScreenBounds(unit.Position), unit.Moves == 0 ? Color.DarkRed : Color.Red);
                 }
                 else
                 {
-
-                    spriteBatch.Draw(unit.Type.getSprite(), worldToScreenBounds(unit.Position), unit.Moves == 0 ? Color.Gray : Color.White);
+                    spriteBatch.Draw(unit.Type.sprite, worldToScreenBounds(unit.Position), unit.Moves == 0 ? Color.Gray : Color.White);
+                    spriteBatch.Draw(unit.Type.tintSprite, worldToScreenBounds(unit.Position), unit.Moves == 0 ? Color.DarkBlue : Color.Blue);
                 }
             }
             if (selectedUnitIndex != -1)
             {
-                spriteBatch.DrawString(ContentLoader.Arial, "Remaining Moves: "+units[selectedUnitIndex].Moves.ToString(), new Vector2(10, 30)-cameraOffset, Color.Red);
+                spriteBatch.DrawString(ContentLoader.Arial, "Remaining Movement: "+units[selectedUnitIndex].Moves.ToString(), new Vector2(10, 30)-cameraOffset, Color.Red);
             }
             spriteBatch.DrawString(ContentLoader.Arial, "Turn " + turn +", Player "+currentPlayer, new Vector2(10, 10) - cameraOffset, Color.Red);
             spriteBatch.End();

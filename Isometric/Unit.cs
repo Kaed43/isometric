@@ -21,8 +21,8 @@ namespace Isometric
             Type = type;
             Position = position;
             Player = player;
-            Moves = type.getMaxMoves();
-            HP = type.getMaxHP();
+            Moves = type.maxMoves;
+            HP = type.maxHP;
             InCombat = false;
         }
     }

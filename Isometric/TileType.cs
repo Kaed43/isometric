@@ -13,8 +13,8 @@ namespace Isometric
         public string name { get; }
         string displayName;
         string desc;
-        Texture2D sprite;
-        int maxHP;
+        public Texture2D sprite { get; }
+        public int maxHP { get; }
         string deathTile;
         int losCost;
         float defMultiplier;
@@ -45,16 +45,6 @@ namespace Isometric
             }
         }
 
-        // Boy... all these getter functions...
-        // I gotta show you how auto-properties work
-        public int getMaxHP()
-        {
-            return maxHP;
-        }
-        public Texture2D getSprite()
-        {
-            return sprite;
-        }
         public int getMoveCostFromTypeString(EMoveType type)
         {
             return MoveCosts[type];

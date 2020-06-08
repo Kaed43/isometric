@@ -14,6 +14,8 @@ namespace Isometric
         int range;
         int minRange;
         //int[] targetLayers;
+        
+        // Ah, yes. s, t, ms, r, and mr. I see.
         public Weapon(int s, string t, int ms, int r, int mr)
         {
             this.strength = s;

@@ -9,7 +9,7 @@ namespace Isometric
 {
     class TileType
     {
-        string name;
+        public string name { get; }
         string displayName;
         string desc;
         Texture2D sprite;
@@ -20,42 +20,28 @@ namespace Isometric
         float atkMultiplier;
         int losBonus;
 
-        int footCost;
-        int tireCost;
-        int treadCost;
-        int crawlerCost;
-        int amphCost;
-        int hoverCost;
-        int structureCost;
-        int airCost;
-        int svCost;
-        int lvCost;
-        int landerCost;
-        int subCost;
+        Dictionary<EMoveType, int> MoveCosts;
 
-        public TileType(string name, string displayName, string desc, Texture2D sprite, int maxHP, string deathTile, int losCost, float defMultiplier, float atkMultiplier, int losBonus, int footCost, int tireCost, int treadCost, int crawlerCost, int amphCost, int hoverCost, int structureCost, int airCost, int svCost, int lvCost, int landerCost, int subCost)
+        public TileType(string[] fileData)
         {
-            this.name = name;
-            this.displayName = displayName;
-            this.desc = desc;
-            this.sprite = sprite;
-            this.maxHP = maxHP;
-            this.deathTile = deathTile;
-            this.losCost = losCost;
-            this.defMultiplier = defMultiplier;
-            this.atkMultiplier = atkMultiplier;
-            this.losBonus = losBonus;
-            this.footCost = footCost;
-            this.tireCost = tireCost;
-            this.treadCost = treadCost;
-            this.crawlerCost = crawlerCost;
-            this.amphCost = amphCost;
-            this.structureCost = structureCost;
-            this.airCost = airCost;
-            this.svCost = svCost;
-            this.lvCost = lvCost;
-            this.landerCost = landerCost;
-            this.subCost = subCost;
+            name = fileData[0];
+            displayName = fileData[1];
+            desc = fileData[2];
+            sprite = ContentLoader.AllTextures[fileData[3]];
+            maxHP = int.Parse(fileData[4]);
+            deathTile = fileData[5];
+            losCost = int.Parse(fileData[6]);
+            defMultiplier = float.Parse(fileData[7]);
+            atkMultiplier = float.Parse(fileData[8]);
+            losBonus = int.Parse(fileData[9]);
+            MoveCosts = new Dictionary<EMoveType, int>();
+
+            // Fuck. Don't worry about that line, it sucks.
+            foreach(EMoveType moveType in Enum.GetValues(typeof(EMoveType)))
+            {
+                // Y'know what, don't worry about this one either.
+                MoveCosts.Add(moveType, int.Parse(fileData[10 + (int)moveType]));
+            }
         }
 
         // Boy... all these getter functions...
@@ -68,53 +54,9 @@ namespace Isometric
         {
             return sprite;
         }
-        public int getMoveCostFromTypeString(string type)
+        public int getMoveCostFromTypeString(EMoveType type)
         {
-            // QQQ WHAT THE FUCK
-            if (type == "foot")
-            {
-                return footCost;
-            }
-            else if (type == "tire")
-            {
-                return tireCost;
-            }
-            else if (type == "tread")
-            {
-                return treadCost;
-            }
-            else if (type == "crawler")
-            {
-                return crawlerCost;
-            }
-            else if (type == "amph")
-            {
-                return amphCost;
-            }
-            else if (type == "structure")
-            {
-                return structureCost;
-            }
-            else if (type == "sv")
-            {
-                return svCost;
-            }
-            else if (type == "lv")
-            {
-                return lvCost;
-            }
-            else if (type == "lander")
-            {
-                return landerCost;
-            }
-            else if (type == "sub")
-            {
-                return subCost;
-            }
-            else
-            {
-                return airCost;
-            }
+            return MoveCosts[type];
         }
     }
 }

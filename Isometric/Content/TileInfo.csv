@@ -1,0 +1,2 @@
+TileName,DisplayName,Description,SpriteName,MaxHp,deathTile,LosCost,DefMultiplier,AttackMultiplier,LosBonus,FootCost,TireCost,TreadCost,CrawlerCost,AmphCost,HoverCost,StructureCost,AirCost,SVCost,LVCost,LanderCost,SubCost
+plains,Plains,Plains!,plains,500,plains_damage_1,1,1,1,0,2,1,2,2,2,2,1,1,-1,-1,-1,-1

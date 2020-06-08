@@ -8,6 +8,7 @@
 <#@ output extension=".cs" #>
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 
 <#
 var lines = File.ReadAllLines(Host.ResolvePath("./Content/Content.mgcb"));
@@ -42,6 +43,7 @@ namespace Isometric
 	/// </summary>
 	static class ContentLoader
 	{
+		public static Dictionary<string, Texture2D> AllTextures { get; private set; }
 <#
 foreach(var name in ImageNames)
 {
@@ -61,12 +63,15 @@ foreach(var name in FontNames)
 		
 		public static void Initialize(ContentManager cm)
 		{
+			AllTextures = new Dictionary<string, Texture2D>();
 
 <#
 foreach(var name in ImageNames)
 {
 #>
 			<#=name#> = cm.Load<Texture2D>(@"<#=name#>");
+			AllTextures.Add("<#=name#>", <#=name#>);
+
 <#
 }
 #>

@@ -22,7 +22,6 @@ namespace Isometric
         }
         public Rectangle getScreenPosition()
         {
-            // I like all these constants just floating around
             int x = Xposition * Constants.HalfTileWidth - Yposition * Constants.HalfTileWidth;
             int y = Xposition * Constants.HalfTileHeight + Yposition * Constants.HalfTileHeight;
             return new Rectangle(x, y, Constants.TileWidth, Constants.TileHeight);

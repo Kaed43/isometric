@@ -23,12 +23,14 @@ namespace Isometric
         string defType;
         Weapon[] weapons;
         int maxMoves;
-        string moveType;
+        EMoveType moveType;
         int los;
         Texture2D sprite;
 
-        public UnitType(string name, string faction, string desc, string tooltip, int tier, int mCost, int rCost, int xCost, int eCost, int maxHP, string defType, Weapon[] weapons, int maxMoves, string moveType, int los, Texture2D sprite)
+        public UnitType(string name, string faction, string desc, string tooltip, int tier, int mCost, int rCost, int xCost, int eCost, int maxHP, string defType, Weapon[] weapons, int maxMoves, EMoveType moveType, int los, Texture2D sprite)
         {
+            // TODO: You could CSV-ify this stuff too but if I embark on that right now I'll die
+            // Also maybe just wait until we have a better CSV reader too
             this.name = name;
             this.faction = faction;
             this.desc = desc;
@@ -59,7 +61,7 @@ namespace Isometric
         {
             return sprite;
         }
-        public string getMovType()
+        public EMoveType getMovType()
         {
             return moveType;
         }

@@ -24,6 +24,7 @@ namespace Isometric
         Point lockedTile = new Point(-1,-1);
         int selectedUnitIndex = -1;
         int turn;
+        int currentPlayer;
 
         readonly Dictionary<Keys, Point> MovementDirections;
 
@@ -50,7 +51,7 @@ namespace Isometric
             world = new Tile[worldWidth, worldHeight];
             units = new List<Unit>();
             turn = 1;
-
+            currentPlayer = 1;
             IsMouseVisible = true;
             base.Initialize();
         }
@@ -93,6 +94,17 @@ namespace Isometric
         protected override void Update(GameTime gameTime)
         {
             NKeys.Update();
+            if (NKeys.IsKeyPressed(Keys.Tab))
+            {
+                if (currentPlayer == 1)
+                {
+                    currentPlayer = 2;
+                }
+                else
+                {
+                    currentPlayer = 1;
+                }
+            }
             if (NKeys.IsKeyDown(Keys.Escape))
             {
                 Exit();
@@ -132,15 +144,18 @@ namespace Isometric
                     {
                         if(units[x].Position == selectedTile)
                         {
-                            selectedUnitIndex = x;
-                            lockedTile = selectedTile;
+                            if (units[x].Player == currentPlayer)
+                            {
+                                selectedUnitIndex = x;
+                                lockedTile = selectedTile;
+                            }
                             clear = false;
                             break;
                         }
                     }
                     if (clear == true)
                     {
-                        units.Add(new Unit(aggressorUT, selectedTile, 1));
+                        units.Add(new Unit(aggressorUT, selectedTile, currentPlayer));
                         selectedUnitIndex = -1;
                         lockedTile.X = -1;
                         lockedTile.Y = -1;
@@ -167,11 +182,20 @@ namespace Isometric
                     if (NKeys.IsKeyPressed(kvp.Key))
                     {
                         var selectedUnit = units[selectedUnitIndex];
-                        var tgtCoords = lockedTile + kvp.Value;
+                        var tgtCoords = selectedTile + kvp.Value;
+                        bool clear = true;
+                        for (var x = 0; x < units.Count; x++)
+                        {
+                            if (units[x].Position == tgtCoords)
+                            {
+                                clear = false;
+                                break;
+                            }
+                        }
                         if (tgtCoords.X < 0 || tgtCoords.Y < 0 || tgtCoords.X >= worldWidth || tgtCoords.Y >= worldHeight)
                             continue;
                         var targetTile = world[lockedTile.X + kvp.Value.X, lockedTile.Y + kvp.Value.Y];
-                        if(targetTile.getType().getMoveCostFromTypeString(movType) <= selectedUnit.Moves)
+                        if(targetTile.getType().getMoveCostFromTypeString(movType) <= selectedUnit.Moves && clear == true)
                         {
                             selectedUnit.Moves = selectedUnit.Moves - targetTile.getType().getMoveCostFromTypeString(movType);
                             selectedUnit.Position = selectedUnit.Position + kvp.Value;
@@ -208,13 +232,21 @@ namespace Isometric
             }
             foreach (Unit unit in units)
             {
-                spriteBatch.Draw(unit.Type.getSprite(), worldToScreenBounds(unit.Position), unit.Moves == 0 ? Color.Gray : Color.White);
+                if (unit.Player == 2)
+                {
+                    spriteBatch.Draw(unit.Type.getSprite(), worldToScreenBounds(unit.Position), unit.Moves == 0 ? Color.DarkRed : Color.Red);
+                }
+                else
+                {
+
+                    spriteBatch.Draw(unit.Type.getSprite(), worldToScreenBounds(unit.Position), unit.Moves == 0 ? Color.Gray : Color.White);
+                }
             }
             if (selectedUnitIndex != -1)
             {
                 spriteBatch.DrawString(ContentLoader.Arial, "Remaining Moves: "+units[selectedUnitIndex].Moves.ToString(), new Vector2(10, 30)-cameraOffset, Color.Red);
             }
-            spriteBatch.DrawString(ContentLoader.Arial, "Turn " + turn, new Vector2(10, 10) - cameraOffset, Color.Red);
+            spriteBatch.DrawString(ContentLoader.Arial, "Turn " + turn +", Player "+currentPlayer, new Vector2(10, 10) - cameraOffset, Color.Red);
             spriteBatch.End();
             
             base.Draw(gameTime);

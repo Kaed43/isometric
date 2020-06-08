@@ -8,7 +8,7 @@ namespace Isometric
 {
     enum EMoveType: byte
     {
-        Foot = 0,
+        Foot,
         Tire,
         Tread,
         Crawler, //crawler?

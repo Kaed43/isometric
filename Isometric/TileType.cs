@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using NCSV;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,25 +23,25 @@ namespace Isometric
 
         Dictionary<EMoveType, int> MoveCosts;
 
-        public TileType(string[] fileData)
+        public TileType(Csv data, int rowHandle)
         {
-            name = fileData[0];
-            displayName = fileData[1];
-            desc = fileData[2];
-            sprite = ContentLoader.AllTextures[fileData[3]];
-            maxHP = int.Parse(fileData[4]);
-            deathTile = fileData[5];
-            losCost = int.Parse(fileData[6]);
-            defMultiplier = float.Parse(fileData[7]);
-            atkMultiplier = float.Parse(fileData[8]);
-            losBonus = int.Parse(fileData[9]);
+            name = data.GetValue(rowHandle, "TileName");
+            displayName = data.GetValue(rowHandle, "DisplayName");
+            desc = data.GetValue(rowHandle, "Description");
+            sprite = ContentLoader.AllTextures[data.GetValue(rowHandle, "SpriteName")];
+            maxHP = int.Parse(data.GetValue(rowHandle, "MaxHp"));
+            deathTile = data.GetValue(rowHandle, "deathTile");
+            losCost = int.Parse(data.GetValue(rowHandle, "LosCost"));
+            defMultiplier = float.Parse(data.GetValue(rowHandle, "DefMultiplier"));
+            atkMultiplier = float.Parse(data.GetValue(rowHandle, "AttackMultiplier"));
+            losBonus = int.Parse(data.GetValue(rowHandle, "LosBonus"));
             MoveCosts = new Dictionary<EMoveType, int>();
 
             // Fuck. Don't worry about that line, it sucks.
             foreach(EMoveType moveType in Enum.GetValues(typeof(EMoveType)))
             {
-                // Y'know what, don't worry about this one either.
-                MoveCosts.Add(moveType, int.Parse(fileData[10 + (int)moveType]));
+                var name = Enum.GetName(typeof(EMoveType), moveType);
+                MoveCosts.Add(moveType, int.Parse(data.GetValue(rowHandle, name + "Cost")));
             }
         }
 

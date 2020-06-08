@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using NCSV;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -65,14 +66,10 @@ namespace Isometric
 
             using (var reader = new StreamReader(new FileStream("Content\\TileInfo.csv", FileMode.Open)))
             {
-                reader.ReadLine(); // Ignore the header
-                while(!reader.EndOfStream)
+                Csv parsedFile = new Csv(reader);
+                for(var rowHandle = 0; rowHandle < parsedFile.Data.Count; rowHandle ++)
                 {
-                    var line = reader.ReadLine().Trim();
-                    if (string.IsNullOrEmpty(line)) continue;
-                    // HACK: pls make a better CSV reader, this is janky as fuck.
-                    var lineData = line.Split(',').Select(x => x.Trim()).ToArray();
-                    var tileType = new TileType(lineData);
+                    var tileType = new TileType(parsedFile, rowHandle);
                     allTileTypes.Add(tileType.name, tileType);
                 }
             }

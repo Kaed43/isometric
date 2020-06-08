@@ -106,19 +106,22 @@ namespace Isometric
                 if (NKeys.IsKeyPressed(Keys.Enter))
                 {
                     bool clear = true;
+                    // Ok so x is 0...
                     int x = 0;
                     foreach (Unit unit in units)
                     {
+                        // and now it's not zero
                         x++;
                         if (unit.getPosition() == selectedTile)
                         {
                             System.Console.WriteLine("X: " + x);
                             clear = false;
+                            // and if the selected unit... ... which is -1.... is the previous unit...? WHAT IS THIS?
                             if (selectedUnitIndex == x - 1)
                             {
                                 selectedUnitIndex = -1;
-                                lockedTile.X = -1;
                                 lockedTile.Y = -1;
+                                lockedTile.X = -1;
                             }
                             else
                             {
@@ -214,6 +217,7 @@ namespace Isometric
         {
             GraphicsDevice.Clear(Color.Black);
             spriteBatch.Begin(transformMatrix: Matrix.CreateTranslation(cameraOffset.X,cameraOffset.Y,0));
+            // WHY IS THIS GUY NOT LINED UP, WHATS WRONG WITH HIM, EH?
                 for (int i = 0; i < worldHeight; i++)
                 {
                     for (int p = 0; p < worldWidth; p++)

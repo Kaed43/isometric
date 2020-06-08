@@ -22,6 +22,7 @@ namespace Isometric
         }
         public Vector2 getScreenPosition()
         {
+            // I like all these constants just floating around
             int x = Xposition * 64 - Yposition *64;
             int y = Xposition * 32 + Yposition * 32;
             return new Vector2(x,y);

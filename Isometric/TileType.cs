@@ -56,6 +56,9 @@ namespace Isometric
             this.landerCost = landerCost;
             this.subCost = subCost;
         }
+
+        // Boy... all these getter functions...
+        // I gotta show you how auto-properties work
         public int getMaxHP()
         {
             return maxHP;

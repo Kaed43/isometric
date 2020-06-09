@@ -217,7 +217,7 @@ namespace Isometric
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
-            spriteBatch.Begin(transformMatrix: Matrix.CreateTranslation(cameraOffset.X,cameraOffset.Y,0));
+            spriteBatch.Begin(transformMatrix: Matrix.CreateTranslation(cameraOffset.X,cameraOffset.Y,0), blendState: BlendState.AlphaBlend);
             for (int i = 0; i < worldHeight; i++)
             {
                 for (int p = 0; p < worldWidth; p++)

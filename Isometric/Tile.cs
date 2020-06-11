@@ -12,6 +12,7 @@ namespace Isometric
         int hp;
         int Xposition;
         int Yposition;
+        public bool isInLos { get; }
         public TileType type { get; }
 
         public Tile(int x,int y,TileType tiletype) {
@@ -19,6 +20,7 @@ namespace Isometric
             Yposition = y;
             this.type = tiletype;
             hp = tiletype.maxHP;
+            isInLos = false;
         }
         public Rectangle getScreenPosition()
         {

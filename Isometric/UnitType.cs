@@ -27,8 +27,9 @@ namespace Isometric
         int los;
         public Texture2D sprite { get; }
         public Texture2D tintSprite { get; }
-
-        public UnitType(string name, string faction, string desc, string tooltip, int tier, int mCost, int rCost, int xCost, int eCost, int maxHP, string defType, Weapon[] weapons, int maxMoves, EMoveType moveType, int los, Texture2D sprite, Texture2D tintSprite)
+        public int width { get; }
+        public int height { get; }
+        public UnitType(string name, string faction, string desc, string tooltip, int tier, int mCost, int rCost, int xCost, int eCost, int maxHP, string defType, Weapon[] weapons, int maxMoves, EMoveType moveType, int los, Texture2D sprite, Texture2D tintSprite, int width, int height)
         {
             // TODO: You could CSV-ify this stuff too but if I embark on that right now I'll die
             // Also maybe just wait until we have a better CSV reader too
@@ -50,6 +51,8 @@ namespace Isometric
             this.los = los;
             this.sprite = sprite;
             this.tintSprite = tintSprite;
+            this.width = width;
+            this.height = height;
         }
     }
 }

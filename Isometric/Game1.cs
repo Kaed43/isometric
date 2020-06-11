@@ -18,6 +18,7 @@ namespace Isometric
         Dictionary<string, TileType> allTileTypes;
         Tile[,] world;
         UnitType aggressorUT;
+        UnitType ueFactoryUT;
         List<Unit> units;
         Vector2 cameraOffset;
         Point selectedTile;
@@ -62,7 +63,11 @@ namespace Isometric
             ContentLoader.Initialize(Content);
             //HACK: Make my image loading use your magic
             Texture2D tempAggressorTint = Content.Load<Texture2D>("UDT_Aggressor_tint");
-            aggressorUT = new UnitType("Aggressor", "UE", "The “Aggressor” light tank sacrifices firepower for superior armor, granting it the ‘medium’ armor classification- though it is still without most traits of a main battle tank. While this unit’s rapid fire main cannon is effective against soft targets, it lacks armor penetration and is at a disadvantage against equally armored foes.", "Light Tank", 1, 2200, 0, 0, 338, 200, "Medium", new Weapon[] { new Weapon(30, "Pierce", 8, 2, 0) }, 8, EMoveType.Tread, 8, ContentLoader.UDT_Aggressor, tempAggressorTint);
+            Texture2D UDT_Factory = Content.Load<Texture2D>("UDT_Factory");
+            Texture2D UDT_Factory_tint = Content.Load<Texture2D>("UDT_Factory_tint");
+            aggressorUT = new UnitType("Aggressor", "UE", "The “Aggressor” light tank sacrifices firepower for superior armor, granting it the ‘medium’ armor classification- though it is still without most traits of a main battle tank. While this unit’s rapid fire main cannon is effective against soft targets, it lacks armor penetration and is at a disadvantage against equally armored foes.", "Light Tank", 1, 2200, 0, 0, 338, 200, "Medium", new Weapon[] { new Weapon(30, "Pierce", 8, 2, 0) }, 8, EMoveType.Tread, 8, ContentLoader.UDT_Aggressor, tempAggressorTint, 1, 1);
+            ueFactoryUT = new UnitType("Factory", "UE", "A sprawling factory complex which completes all necessary operations to process raw metal into any form. Used to produce land vehicles and equip infantry teams. Factories can be assisted by engineering units to complete projects more quickly.", "Factory", 1, 8800, 0, 0, 450, 350,"Structure",new Weapon[0],0,EMoveType.Structure,8,UDT_Factory,UDT_Factory_tint,3,3);
+
 
             allTileTypes = new Dictionary<string, TileType>();
 
@@ -84,7 +89,8 @@ namespace Isometric
                     world[p, i] = new Tile(p, i, allTileTypes["plains"]);
                 }
             }
-
+            units.Add(new Unit(ueFactoryUT, new Point(0, 0), 1));
+            units.Add(new Unit(ueFactoryUT, new Point(13, 13), 2));
         }
 
         protected override void UnloadContent()
@@ -225,7 +231,7 @@ namespace Isometric
                     spriteBatch.Draw(world[p,i].type.sprite, world[p,i].getScreenPosition(), Color.White);
                 }
             }
-            spriteBatch.Draw(ContentLoader.selector, worldToScreenBounds(selectedTile), Color.White);
+            spriteBatch.Draw(ContentLoader.selector, worldToScreenBounds(selectedTile), Color.CornflowerBlue);
             if ( lockedTile.X!=-1 && lockedTile.Y != -1)
             {
                 spriteBatch.Draw(ContentLoader.selector, worldToScreenBounds(lockedTile), Color.Red);

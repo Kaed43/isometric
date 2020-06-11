@@ -20,6 +20,7 @@ namespace Isometric
         float defMultiplier;
         float atkMultiplier;
         int losBonus;
+        //public int reclaimValue {get;}
 
         Dictionary<EMoveType, int> MoveCosts;
 

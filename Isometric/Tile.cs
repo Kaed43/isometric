@@ -10,8 +10,9 @@ namespace Isometric
     class Tile
     {
         int hp;
-        int Xposition;
-        int Yposition;
+        public int Xposition { get; }
+        public int Yposition { get; }
+        int remainingValue;
         public bool isInLos { get; }
         public TileType type { get; }
 
@@ -21,12 +22,7 @@ namespace Isometric
             this.type = tiletype;
             hp = tiletype.maxHP;
             isInLos = false;
-        }
-        public Rectangle getScreenPosition()
-        {
-            int x = Xposition * Constants.HalfTileWidth - Yposition * Constants.HalfTileWidth;
-            int y = Xposition * Constants.HalfTileHeight + Yposition * Constants.HalfTileHeight;
-            return new Rectangle(x, y, Constants.TileWidth, Constants.TileHeight);
+            remainingValue = tiletype.reclaimValue;
         }
     }
 }

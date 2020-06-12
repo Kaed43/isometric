@@ -228,26 +228,26 @@ namespace Isometric
             {
                 for (int p = 0; p < worldWidth; p++)
                 {
-                    spriteBatch.Draw(world[p,i].type.sprite, world[p,i].getScreenPosition(), Color.White);
+                    spriteBatch.Draw(world[p,i].type.sprite, worldToScreenBounds(new Point(world[p,i].Xposition,world[p,i].Yposition),world[p,i].type.pxHeight), Color.White);
                 }
             }
-            spriteBatch.Draw(ContentLoader.selector, worldToScreenBounds(selectedTile), Color.CornflowerBlue);
+            spriteBatch.Draw(ContentLoader.selector, worldToScreenBounds(selectedTile, Constants.TileHeight), Color.CornflowerBlue);
             if ( lockedTile.X!=-1 && lockedTile.Y != -1)
             {
-                spriteBatch.Draw(ContentLoader.selector, worldToScreenBounds(lockedTile), Color.Red);
+                spriteBatch.Draw(ContentLoader.selector, worldToScreenBounds(lockedTile, Constants.TileHeight), Color.Red);
             }
             foreach (Unit unit in units)
             {
                 //HACK: Make tinting not look like shit?
                 if (unit.Player == 2)
                 {
-                    spriteBatch.Draw(unit.Type.sprite, worldToScreenBounds(unit.Position), unit.Moves == 0 ? Color.Gray : Color.White);
-                    spriteBatch.Draw(unit.Type.tintSprite, worldToScreenBounds(unit.Position), unit.Moves == 0 ? Color.DarkRed : Color.Red);
+                    spriteBatch.Draw(unit.Type.sprite, worldToScreenBounds(unit.Position, Constants.TileHeight), unit.Moves == 0 ? Color.Gray : Color.White);
+                    spriteBatch.Draw(unit.Type.tintSprite, worldToScreenBounds(unit.Position, Constants.TileHeight), unit.Moves == 0 ? Color.DarkRed : Color.Red);
                 }
                 else
                 {
-                    spriteBatch.Draw(unit.Type.sprite, worldToScreenBounds(unit.Position), unit.Moves == 0 ? Color.Gray : Color.White);
-                    spriteBatch.Draw(unit.Type.tintSprite, worldToScreenBounds(unit.Position), unit.Moves == 0 ? Color.DarkBlue : Color.Blue);
+                    spriteBatch.Draw(unit.Type.sprite, worldToScreenBounds(unit.Position, Constants.TileHeight), unit.Moves == 0 ? Color.Gray : Color.White);
+                    spriteBatch.Draw(unit.Type.tintSprite, worldToScreenBounds(unit.Position,Constants.TileHeight), unit.Moves == 0 ? Color.DarkBlue : Color.Blue);
                 }
             }
             if (selectedUnitIndex != -1)
@@ -269,9 +269,9 @@ namespace Isometric
             return new Point(posX, posY);
         }
 
-        public Rectangle worldToScreenBounds(Point p)
+        public Rectangle worldToScreenBounds(Point p,int height)
         {
-            return new Rectangle((p.X - p.Y) * Constants.HalfTileWidth, (p.X + p.Y) * Constants.HalfTileHeight, Constants.TileWidth, Constants.TileHeight);
+            return new Rectangle((p.X - p.Y) * Constants.HalfTileWidth, (p.X + p.Y) * Constants.HalfTileHeight-(height-64), Constants.TileWidth, height);
         }
     }
 }

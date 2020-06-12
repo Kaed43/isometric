@@ -20,7 +20,8 @@ namespace Isometric
         float defMultiplier;
         float atkMultiplier;
         int losBonus;
-        //public int reclaimValue {get;}
+        public int reclaimValue {get;}
+        public int pxHeight { get; }
 
         Dictionary<EMoveType, int> MoveCosts;
 
@@ -36,6 +37,8 @@ namespace Isometric
             defMultiplier = float.Parse(data.GetValue(rowHandle, "DefMultiplier"));
             atkMultiplier = float.Parse(data.GetValue(rowHandle, "AttackMultiplier"));
             losBonus = int.Parse(data.GetValue(rowHandle, "LosBonus"));
+            reclaimValue = int.Parse(data.GetValue(rowHandle, "reclaimValue"));
+            pxHeight = int.Parse(data.GetValue(rowHandle, "pxHeight"));
             MoveCosts = new Dictionary<EMoveType, int>();
 
             // Fuck. Don't worry about that line, it sucks.
